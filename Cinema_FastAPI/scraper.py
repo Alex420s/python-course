@@ -5,49 +5,39 @@ from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import json
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
 
 def iniciar_navegador():
+    # Configuraciones para Chrome en modo headless (sin interfaz gráfica)
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Ejecutar Chrome en modo headless (sin interfaz gráfica)
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--headless")  # Ejecutar Chrome en modo headless
+    chrome_options.add_argument("--no-sandbox")  # Necesario para evitar problemas de sandboxing en entornos de servidor
+    chrome_options.add_argument("--disable-dev-shm-usage")  # Manejo de memoria compartida en contenedores
+    chrome_options.add_argument("--disable-gpu")  # Desactiva la GPU (opcional)
+    chrome_options.add_argument("--remote-debugging-port=9222")  # Permite la depuración remota
 
-    # Usar webdriver-manager para obtener el chromedriver más reciente
+    # Usar webdriver_manager para manejar el ChromeDriver
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     return driver
 
-
 def scrape_cinepolis():
-    # Configurar Selenium para usar Chrome 
-    chrome_options = Options()
-    # Para ejecutar en modo sin interfaz gráfica
-    # chrome_options.add_argument("--headless")
-    # Path al driver de Chrome 
-    driver_path = "/Users/alex420s/Downloads/chromedriver-mac-arm64/chromedriver"
-    service = Service(driver_path)
-    # Inicializar el navegador
-    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver = iniciar_navegador()
 
     try:
-        # Ir a la URL
+        # Ir a la URL de Cinepolis
         perisur = 'https://cinepolis.com/mx?cinema=cinepolis-perisur-cdmx'
         driver.get(perisur)
         driver.implicitly_wait(20)  # Esperar a que la página cargue
 
-        
-        wait = WebDriverWait(driver, 20)  # Espera hasta 10 segundos
-        
-        # Esperar y volver a buscar el botón hasta que esté disponible
+        wait = WebDriverWait(driver, 20)  # Espera hasta 20 segundos
+
+        # Esperar y buscar el botón hasta que esté disponible
         button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".mf-locations-filter-actions button[type='button']")))
         
         # Usar JavaScript para desplazarse hasta el elemento
         driver.execute_script("arguments[0].scrollIntoView();", button)
 
-        # Hacer clic mediante JavaScript
+        # Hacer clic en el botón mediante JavaScript
         driver.execute_script("arguments[0].click();", button)
         
         # Volver a buscar los elementos después del clic
@@ -99,7 +89,7 @@ def scrape_cinepolis():
         # Convertir la lista de diccionarios a JSON
         peliculas_json = json.dumps(cartelera, indent=4, ensure_ascii=False)
 
-        # Guardar el JSON en un archivo
+        # Guardar el JSON en un archivo (opcional)
         with open('peliculas_guardadas.json', 'w', encoding='utf-8') as f:
             f.write(peliculas_json)
 
