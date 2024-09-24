@@ -7,18 +7,25 @@ from selenium.webdriver.chrome.options import Options
 import json
 from webdriver_manager.chrome import ChromeDriverManager
 
+
 def iniciar_navegador():
     chrome_options = Options()
-    chrome_options.add_argument("--headless")  # Ejecutar Chrome en modo headless
+    chrome_options.add_argument("--headless")  # Ejecutar Chrome en modo headless (sin interfaz gráfica)
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    
-    # Especificar el path del binario de Chrome
-    chrome_options.binary_location = "/usr/bin/google-chrome"
+    chrome_options.add_argument("--disable-gpu")  # Desactivar GPU
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-software-rasterizer")
+    chrome_options.add_argument("--remote-debugging-port=9222")
 
-    # Usar webdriver-manager para obtener el chromedriver más reciente
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    # Crear una instancia del Service con la ubicación de chromedriver
+    chrome_service = Service(executable_path="/usr/bin/chromedriver")
+
+    # Inicializar el driver de Chrome usando Service
+    driver = webdriver.Chrome(service=chrome_service, options=chrome_options)
+    
     return driver
+
 
 def scrape_cinepolis():
     driver = iniciar_navegador()
