@@ -8,15 +8,15 @@ import json
 from webdriver_manager.chrome import ChromeDriverManager
 
 def iniciar_navegador():
-    # Configuraciones para Chrome en modo headless (sin interfaz gráfica)
     chrome_options = Options()
     chrome_options.add_argument("--headless")  # Ejecutar Chrome en modo headless
-    chrome_options.add_argument("--no-sandbox")  # Necesario para evitar problemas de sandboxing en entornos de servidor
-    chrome_options.add_argument("--disable-dev-shm-usage")  # Manejo de memoria compartida en contenedores
-    chrome_options.add_argument("--disable-gpu")  # Desactiva la GPU (opcional)
-    chrome_options.add_argument("--remote-debugging-port=9222")  # Permite la depuración remota
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    
+    # Especificar el path del binario de Chrome
+    chrome_options.binary_location = "/usr/bin/google-chrome"
 
-    # Usar webdriver_manager para manejar el ChromeDriver
+    # Usar webdriver-manager para obtener el chromedriver más reciente
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     return driver
 
