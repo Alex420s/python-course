@@ -5,6 +5,21 @@ from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import json
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
+
+def iniciar_navegador():
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # Ejecutar Chrome en modo headless (sin interfaz gráfica)
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
+    # Usar webdriver-manager para obtener el chromedriver más reciente
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+    return driver
+
 
 def scrape_cinepolis():
     # Configurar Selenium para usar Chrome 
